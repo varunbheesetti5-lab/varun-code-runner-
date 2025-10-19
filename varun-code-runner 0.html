@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Varun Code Runner</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html { 
+      height: 100%; 
+      display: flex; 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+    }
+    .editor-panel { 
+      width: 50%; 
+      display: flex; 
+      flex-direction: column; 
+      background: #1e1e1e; 
+      color: #d4d4d4; 
+    }
+    .header {
+      background: #2d2d30;
+      padding: 15px;
+      text-align: center;
+      color: #fff;
+      font-size: 18px;
+      font-weight: bold;
+      border-bottom: 2px solid #007acc;
+    }
+    .tabs { 
+      display: flex; 
+      background: #2d2d30;
+    }
+    .tab { 
+      flex: 1; 
+      padding: 12px; 
+      text-align: center; 
+      cursor: pointer; 
+      background: #2d2d30;
+      color: #ccc;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+    }
+    .tab:hover {
+      background: #3e3e42;
+    }
+    .tab.active { 
+      background: #1e1e1e; 
+      color: #fff;
+      border-bottom: 3px solid #007acc;
+    }
+    textarea { 
+      flex: 1; 
+      width: 100%; 
+      padding: 15px; 
+      background: #1e1e1e; 
+      color: #d4d4d4;
+      border: none; 
+      resize: none; 
+      font-family: 'Consolas', 'Courier New', monospace; 
+      font-size: 14px; 
+      line-height: 1.6;
+      overflow: auto;
+      outline: none;
+    }
+    textarea::placeholder {
+      color: #6a6a6a;
+    }
+    .controls { 
+      padding: 15px; 
+      background: #2d2d30; 
+      display: flex; 
+      gap: 10px;
+      border-top: 1px solid #3e3e42;
+    }
+    button { 
+      padding: 10px 20px; 
+      border: none; 
+      cursor: pointer; 
+      border-radius: 5px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    button.run { 
+      background: #4caf50; 
+      color: white; 
+      flex: 1;
+    }
+    button.run:hover {
+      background: #45a049;
+    }
+    button.clear { 
+      background: #f44336; 
+      color: white; 
+    }
+    button.clear:hover {
+      background: #da190b;
+    }
+    button.copy { 
+      background: #2196f3; 
+      color: white; 
+    }
+    button.copy:hover {
+      background: #0b7dda;
+    }
+    .preview-panel { 
+      width: 50%; 
+      border-left: 2px solid #3e3e42;
+      display: flex;
+      flex-direction: column;
+    }
+    .preview-header {
+      background: #2d2d30;
+      padding: 15px;
+      text-align: center;
+      color: #fff;
+      font-size: 18px;
+      font-weight: bold;
+      border-bottom: 2px solid #007acc;
+    }
+    iframe { 
+      flex: 1;
+      width: 100%; 
+      border: none;
+      background: white;
+    }
+    @media (max-width: 900px) {
+      body { 
+        flex-direction: column; 
+      }
+      .editor-panel, .preview-panel { 
+        width: 100%; 
+        height: 50%; 
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="editor-panel">
+    <div class="header">Varun Code Runner 🛠️</div>
+    <div class="tabs">
+      <div class="tab active" data-lang="html">HTML</div>
+      <div class="tab" data-lang="css">CSS</div>
+      <div class="tab" data-lang="js">JavaScript</div>
+    </div>
+    <textarea id="html" placeholder="Paste your HTML code here..."><h1>Hello World! 👋</h1>
+<p>Edit HTML, CSS, and JavaScript to see live changes.</p>
+<button id="clickMe">Click Me!</button>
+<div id="output"></div></textarea>
+    <textarea id="css" style="display:none" placeholder="Paste your CSS code here...">body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
+
+button {
+  padding: 12px 24px;
+  font-size: 16px;
+  background: white;
+  color: #667eea;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+#output {
+  margin-top: 20px;
+  font-size: 1.2em;
+}</textarea>
+    <textarea id="js" style="display:none" placeholder="Paste your JavaScript code here...">document.getElementById('clickMe').addEventListener('click', function() {
+  const output = document.getElementById('output');
+  output.innerHTML = '🎉 Button clicked! The app is working perfectly!';
+});</textarea>
+    <div class="controls">
+      <button class="run">▶ Run Code</button>
+      <button class="clear">🗑 Clear All</button>
+      <button class="copy">📋 Copy Code</button>
+    </div>
+  </div>
+  <div class="preview-panel">
+    <div class="preview-header">👁 Live Preview</div>
+    <iframe id="preview" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab');
+    const areas = {
+      html: document.getElementById('html'),
+      css: document.getElementById('css'),
+      js: document.getElementById('js')
+    };
+    
+    // Tab switching
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const lang = tab.dataset.lang;
+        Object.keys(areas).forEach(k => {
+          areas[k].style.display = k === lang ? 'block' : 'none';
+        });
+      });
+    });
+
+    const iframe = document.getElementById('preview');
+    const runBtn = document.querySelector('button.run');
+    const clearBtn = document.querySelector('button.clear');
+    const copyBtn = document.querySelector('button.copy');
+    let autoRunTimeout;
+
+    function runCode() {
+      const html = areas.html.value;
+      const css = `<style>${areas.css.value}</style>`;
+      const js = `<script>${areas.js.value.replace(/<\/script>/gi, '<\\/script>')}<\/script>`;
+      const fullCode = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  ${css}
+</head>
+<body>
+  ${html}
+  ${js}
+</body>
+</html>`;
+      iframe.srcdoc = fullCode;
+    }
+
+    // Auto-run with debounce (500ms after typing stops)
+    Object.values(areas).forEach(area => {
+      area.addEventListener('input', () => {
+        clearTimeout(autoRunTimeout);
+        autoRunTimeout = setTimeout(runCode, 500);
+      });
+    });
+
+    // Run button
+    runBtn.addEventListener('click', () => {
+      runCode();
+      runBtn.textContent = '✓ Running...';
+      setTimeout(() => {
+        runBtn.textContent = '▶ Run Code';
+      }, 1000);
+    });
+
+    // Clear button
+    clearBtn.addEventListener('click', () => {
+      if (confirm('Clear all code?')) {
+        Object.values(areas).forEach(a => a.value = '');
+        runCode();
+      }
+    });
+
+    // Copy button
+    copyBtn.addEventListener('click', () => {
+      const allCode = `HTML:\n${areas.html.value}\n\nCSS:\n${areas.css.value}\n\nJavaScript:\n${areas.js.value}`;
+      navigator.clipboard.writeText(allCode).then(() => {
+        copyBtn.textContent = '✓ Copied!';
+        setTimeout(() => {
+          copyBtn.textContent = '📋 Copy Code';
+        }, 2000);
+      }).catch(() => {
+        alert('Copy failed. Please copy manually.');
+      });
+    });
+
+    // Initial run on page load
+    window.addEventListener('load', runCode);
+  </script>
+</body>
+</html>
